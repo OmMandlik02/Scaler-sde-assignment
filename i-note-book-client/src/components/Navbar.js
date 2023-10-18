@@ -21,14 +21,7 @@ export default function Navbar() {
                 {/*   The class name active show you have on current url corresponding to that button */}
                 <Link className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`} to="/about">About</Link>
               </li>
-              <li className="nav-item">
-                <Link className="nav-link disabled" to="/" tabIndex="-1" aria-disabled="true">Disabled</Link>
-              </li>
             </ul>
-            <form className="d-flex">
-              <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-              <button className="btn btn-outline-success" type="submit">Search</button>
-            </form>
           </div>
         </div>
       </nav>

@@ -3,9 +3,8 @@ const mentor_name = require('../models/mentor')
 const mailer = require('../Mailers/Student')
 module.exports.addStudent = async function (req, res) {
     let mentor_detail = await mentor_name.findById(req.query.mentor_id);
-    console.log(req.body)
     if (mentor_detail) {
-        if (mentor_detail.students.length <= 4) {
+        if (mentor_detail.students.length < 4) {
             let student = await student_db.create({
                 name: req.body.name,
                 mentor: req.query.mentor_id,
@@ -31,7 +30,6 @@ module.exports.editMarks = async function (req, res) {
     let student = await student_db.findById(req.body.id);
 
     if (student && student.editable) {
-        console.log(req.body)
         await student_db.findByIdAndUpdate(req.query.id, {
             name: req.body.name ? req.body.name : student.name,
             email: req.body.email && req.body.email != "" ? req.body.email : student.email,
@@ -64,7 +62,6 @@ module.exports.editStudent = async function (req, res) {
 
 module.exports.removeStudent = async function (req, res) {
     let student = await student_db.findById(req.query.id);
-    console.log(student)
     if (student && student.editable) {
 
         await student_db.findByIdAndDelete(req.query.id);
@@ -80,24 +77,31 @@ module.exports.removeStudent = async function (req, res) {
 module.exports.lock = async function (req, res) {
 
     let students = await student_db.find({ mentor: req.query.mentor_id });
-
-    students.map(element => {
+    let lockable = true;
+    students.map(async (element) => {
         if (!element.Ideation || !element.Viva || !element.Execution) {
-            return res.status(200).json({
-                "message": " Marks are not assigned or either less than three members are in classroom",
-                "locked": false
-            })
+            lockable = false
         }
     })
-    await student_db.updateMany({ mentor: req.query.mentor_id }, { $set: { editable: false } })
-    // console.log(students)
-    students.map(element => {
-        mailer.newComment(element);
-    })
-    return res.status(200).json({
-        "message": "Locked and mail sent successfully to all students",
-        "locked": true
-    })
+    if (!lockable) {
+        return res.status(200).json({
+            "message": " Marks are not assigned or either less than three members are in classroom",
+            "locked": false
+        })
+    } else {
+        const user = await student_db.updateMany({ mentor: req.query.mentor_id }, { $set: { editable: false } })
+        students.map(async (element) => {
+            await mailer.newComment(element);
+        })
+        return res.status(200).json({
+            "message": "Locked and mail sent successfully to all students",
+            "locked": true
+        })
+    }
+
+
+
+
 }
 
 module.exports.addMentor = async function (req, res) {

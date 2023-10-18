@@ -6,7 +6,7 @@ const NotesState = (props) => {
     const [lock, setLock] = useState(false);
     const createNote = async (data) => {
         console.log(data)
-        const url = `http://localhost:8000/user/addStudent/?mentor_id=652980e92b46af73fdec205e`;
+        const url = `http://localhost:8000/user/addStudent/?mentor_id=652f3ff8438f6be874b01250`;
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -15,10 +15,14 @@ const NotesState = (props) => {
             body: JSON.stringify(data)
         })
         const updatedNote = await response.json();
+        console.log(updatedNote)
+        if (updateNote) {
+            setAlert(updatedNote.message);
+        }
         return updatedNote;
     }
     const fetchNote = async () => {
-        const url = "http://localhost:8000/user/fetchStudents/?mentor_id=652980e92b46af73fdec205e";
+        const url = "http://localhost:8000/user/fetchStudents/?mentor_id=652f3ff8438f6be874b01250";
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -46,7 +50,9 @@ const NotesState = (props) => {
             }
         })
         const fetchedDataOfDel = await response.json();
-
+        if (fetchedDataOfDel) {
+            setAlert("Student deleted successfully");
+        }
         return fetchedDataOfDel
     }
     useEffect(() => {
@@ -65,7 +71,7 @@ const NotesState = (props) => {
         }
     }
     async function handleLock() {
-        const url = `http://localhost:8000/user/lockData/?mentor_id=652980e92b46af73fdec205e`;
+        const url = `http://localhost:8000/user/lockData/?mentor_id=652f3ff8438f6be874b01250`;
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -75,8 +81,10 @@ const NotesState = (props) => {
         const fetchedData = await response.json();
         console.log(fetchedData)
         if (fetchedData.locked) {
-
             setLock(true);
+            setAlert("Locked the classroom successfully");
+        } else {
+            setAlert(fetchedData.message)
         }
     }
     // To delete the note
@@ -99,6 +107,7 @@ const NotesState = (props) => {
             },
             body: JSON.stringify(data)
         })
+        setAlert("Student detail updated successfully");
         fetchNote();
     }
     return (
