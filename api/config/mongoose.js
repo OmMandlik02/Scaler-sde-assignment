@@ -4,6 +4,7 @@ main().catch(err => console.log(err));
 
 async function main() {
     await mongoose.connect("mongodb+srv://ommandlik7878:Mandlik7878@cluster0.rbaey93.mongodb.net/?retryWrites=true&w=majority");
+    await mongoose.connect("mongodb+srv://Ommandlik:Mandlik7878@cluster0.i3cjcqk.mongodb.net/?retryWrites=true&w=majority");
     console.log('Database connected successfully');
 }
 mongoose.connection.on("disconnected", function () {
@@ -12,5 +13,4 @@ mongoose.connection.on("disconnected", function () {
 mongoose.connection.on("connected", function () {
     console.log('Database connected');
 })
-
 
